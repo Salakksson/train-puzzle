@@ -1,9 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+
 #include <stdbool.h>
-#include <ctype.h>
 #include <assert.h>
+
+#ifdef DEBUG
+#include <ctype.h>
+#endif
 
 #define MAX_SIZE 1000
 #define MIN_SIZE 1
@@ -15,6 +19,7 @@ struct {
 	int direction;
 } train;
 
+#ifdef DEBUG
 void print_state()
 {
 	for (int i = 0; i < train.size; i++)
@@ -29,6 +34,7 @@ void print_state()
 	}
 	printf("\n");
 }
+#endif
 
 void set_light(bool set)
 {
@@ -70,6 +76,7 @@ void init_train(int size)
 int guess_size()
 {
 	// check if size is less than 5
+	// this is trivial to check
 	for (int i = 0; i < 5; i++)
 	{
 		move_forward();
@@ -106,12 +113,7 @@ int guess_size()
 		for (int i = 0; i < count; i++)
 		{
 			// should be in explored region
-			if (get_light() != false)
-			{
-				puts("invalid?");
-				print_state();
-				return count;
-			}
+			assert(get_light() == false);
 			move_forward();
 		}
 		// now we are on <-(?) [f f ...] t ?
@@ -154,8 +156,7 @@ int main()
 	if (size < MIN_SIZE) size = MIN_SIZE;
 	init_train(size);
 
-	// guess with high iteration count in case of disaster
-	int guess = guess_size(MAX_SIZE * 5);
+	int guess = guess_size();
 
 	printf("size is %i\n", size);
 	printf("guessed %i\n", guess);
